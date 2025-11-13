@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trisvesgo</title>
+  <title>Trivago Clone</title>
   <style>
 /* ====== ESTILO INSPIRADO NO TRIVAGO ====== */
 body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#2e2e2e;}
@@ -26,11 +26,24 @@ body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:
 .form-anuncio button{background:#009ee2;color:#fff;font-weight:bold;border:none;cursor:pointer;} 
 .form-anuncio button:hover{background:#007bb0;}
   </style>
+  <style>
+/* Estilo mobile */
+@media (max-width: 768px) {
+  .topo {flex-direction: column;gap:20px;padding:20px;}
+  .search-box {flex-direction: column;width:100%;}
+  .conteudo {grid-template-columns: 1fr;padding:20px;}
+  .filtros {order:2;}
+  .resultados {order:1;}
+  .hotel-card {grid-template-columns: 1fr;}
+  .hotel-card img {height:200px;}
+  .criar-anuncio {width:95%;margin:20px auto;}
+}
+  </style>
 </head>
 <body>
 
 <header class="topo">
-  <div class="logo">tr<span>i</span>svesgo</div>
+  <div class="logo">tr<span>i</span>vago</div>
 
   <form id="searchForm" class="search-box">
     <input type="text" id="destino" placeholder="Para onde você vai?">
