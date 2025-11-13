@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trivago Clone</title>
+  <title>Trivesgo</title>
   <style>
 /* ====== ESTILO INSPIRADO NO TRIVAGO ====== */
 body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#2e2e2e;}
@@ -43,7 +43,7 @@ body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:
 <body>
 
 <header class="topo">
-  <div class="logo">tr<span>i</span>vago</div>
+  <div class="logo">tr<span>i</span>vesgo</div>
 
   <form id="searchForm" class="search-box">
     <input type="text" id="destino" placeholder="Para onde você vai?">
@@ -83,13 +83,28 @@ body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:
     <input type="number" id="precoHotel" placeholder="Preço por noite" required>
     <input type="number" id="rateHotel" placeholder="Avaliação (0–10)" min="0" max="10" step="0.1" required>
     <input type="text" id="imagemHotel" placeholder="URL da imagem" required>
+    <input type="text" id="descricaoHotel" placeholder="Descrição do hotel" required>
+    <input type="text" id="comodidadesHotel" placeholder="Comodidades (ex: Wi-Fi, Piscina, Café)" required>
     <button type="submit">Publicar anúncio</button>
   </form>
 </section>
 
 <script>
-// Dados iniciais
-let anuncios = JSON.parse(localStorage.getItem("anuncios")) || [];
+// Dados iniciais corrigidos
+let anuncios = JSON.parse(localStorage.getItem("anuncios")) || [
+  {
+    nome: "Hotel Calisso",
+    local: "São Paulo, Brasil",
+    preco: 350,
+    rate: 8.3,
+    imagem: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4BuPBFgiNIHL_GyfqgQ2jBHSg-Ud07JXgGA&s",
+    descricao: "O Hotel Calisso oferece conforto premium, natureza ao redor, piscina, trilhas, café da manhã completo e acomodações modernas para toda a família.",
+    comodidades: ["Wi-Fi", "Piscina", "Café da manhã", "Estacionamento", "Academia"]
+  }
+];
+
+localStorage.setItem("anuncios", JSON.stringify(anuncios));
+
 const lista = document.getElementById("listaHotéis");
 
 function renderAnuncios() {
@@ -104,6 +119,8 @@ function renderAnuncios() {
         <h3>${hotel.nome}</h3>
         <p>${hotel.local}</p>
         <p><strong>R$${hotel.preco}</strong> • Nota ${hotel.rate}</p>
+        <p>${hotel.descricao}</p>
+        <p><strong>Comodidades:</strong> ${hotel.comodidades.join(', ')}</p>
       </div>
     `;
     lista.appendChild(card);
@@ -124,7 +141,9 @@ form.addEventListener("submit", (e) => {
     local: document.getElementById("localHotel").value,
     preco: document.getElementById("precoHotel").value,
     rate: document.getElementById("rateHotel").value,
-    imagem: document.getElementById("imagemHotel").value
+    imagem: document.getElementById("imagemHotel").value,
+    descricao: document.getElementById("descricaoHotel").value,
+    comodidades: document.getElementById("comodidadesHotel").value.split(',').map(c => c.trim())
   };
 
   anuncios.push(novoHotel);
@@ -135,6 +154,37 @@ form.addEventListener("submit", (e) => {
   alert("Anúncio publicado!");
 });
 </script>
+
+  <!-- Firebase App -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+
+  <script>
+    // 1. Configuração do Firebase (SUBSTITUA PELOS SEUS DADOS)
+    const firebaseConfig = {
+      apiKey: "SUA_API_KEY",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      projectId: "SEU_PROJETO",
+      storageBucket: "SEU_PROJETO.appspot.com",
+      messagingSenderId: "000000000000",
+      appId: "1:000000000000:web:00000000000000"
+    };
+
+    // Inicialização
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // --- SALVAR HOTEL NO FIREBASE ---
+    async function salvarHotelFirebase(hotel){
+      await db.collection("hoteis").add(hotel);
+    }
+
+    // --- CARREGAR HOTEIS DO FIREBASE ---
+    async function carregarHoteisFirebase(){
+      const snap = await db.collection("hoteis").get();
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    }
+  </script>
 
 </body>
 </html>
