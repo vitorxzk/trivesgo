@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trisvesgo</title>
+  <style>
+/* ====== ESTILO INSPIRADO NO TRIVAGO ====== */
+body {margin:0;font-family:"Segoe UI",Arial,sans-serif;background:#f0f2f5;color:#2e2e2e;}
+.topo {background:#fff;padding:20px 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ddd;}
+.logo {font-size:32px;font-weight:bold;color:#ff7a00;} .logo span{color:#009ee2;}
+.search-box{display:flex;gap:10px;background:#fff;padding:12px;border-radius:14px;border:1px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.08);} 
+.search-box input,.search-box select{padding:12px;border:1px solid #ccc;border-radius:10px;font-size:15px;} 
+.search-box button{padding:12px 22px;background:#009ee2;color:#fff;border-radius:10px;border:none;font-weight:bold;cursor:pointer;} 
+.search-box button:hover{background:#007bb0;} 
+.conteudo{display:grid;grid-template-columns:280px 1fr;gap:30px;padding:40px;} 
+.filtros{background:#fff;padding:20px;border-radius:14px;border:1px solid #ddd;box-shadow:0 2px 6px rgba(0,0,0,0.05);} 
+#listaHotéis{display:flex;flex-direction:column;gap:22px;} 
+.hotel-card{display:grid;grid-template-columns:260px 1fr;background:#fff;border-radius:14px;overflow:hidden;border:1px solid #ddd;box-shadow:0 2px 6px rgba(0,0,0,0.05);} 
+.hotel-card img{width:100%;height:100%;object-fit:cover;} 
+.hotel-card div{padding:18px;display:flex;flex-direction:column;justify-content:space-between;} 
+.hotel-card h3{font-size:24px;margin:0;} .hotel-card p{font-size:15px;color:#444;} 
+.criar-anuncio{margin:40px auto;width:85%;background:#fff;padding:30px;border-radius:14px;border:1px solid #ddd;box-shadow:0 2px 6px rgba(0,0,0,0.05);} 
+.form-anuncio{display:grid;gap:16px;} 
+.form-anuncio input,.form-anuncio button{padding:14px;font-size:16px;border-radius:10px;border:1px solid #ccc;} 
+.form-anuncio button{background:#009ee2;color:#fff;font-weight:bold;border:none;cursor:pointer;} 
+.form-anuncio button:hover{background:#007bb0;}
+  </style>
+</head>
+<body>
+
+<header class="topo">
+  <div class="logo">tr<span>i</span>svesgo</div>
+
+  <form id="searchForm" class="search-box">
+    <input type="text" id="destino" placeholder="Para onde você vai?">
+    <input type="date" id="checkin">
+    <input type="date" id="checkout">
+    <select id="hospedes">
+      <option value="1">1 hóspede</option>
+      <option value="2">2 hóspedes</option>
+      <option value="3">3 hóspedes</option>
+    </select>
+    <button type="submit">Buscar</button>
+  </form>
+</header>
+
+<main class="conteudo">
+  <aside class="filtros">
+    <h3>Filtros</h3>
+    <label>Preço máximo: <span id="precoValor">500</span></label>
+    <input type="range" id="precoFiltro" min="20" max="500" value="500">
+
+    <label>Avaliação mínima: <span id="rateValor">0</span></label>
+    <input type="range" id="rateFiltro" min="0" max="10" step="0.1" value="0">
+  </aside>
+
+  <section class="resultados">
+    <h2>Ofertas</h2>
+    <p id="quantidade"></p>
+    <div id="listaHotéis"></div>
+  </section>
+</main>
+
+<section class="criar-anuncio">
+  <h2>Criar anúncio de hotel</h2>
+  <form id="formAnuncio" class="form-anuncio">
+    <input type="text" id="nomeHotel" placeholder="Nome do hotel" required>
+    <input type="text" id="localHotel" placeholder="Localização" required>
+    <input type="number" id="precoHotel" placeholder="Preço por noite" required>
+    <input type="number" id="rateHotel" placeholder="Avaliação (0–10)" min="0" max="10" step="0.1" required>
+    <input type="text" id="imagemHotel" placeholder="URL da imagem" required>
+    <button type="submit">Publicar anúncio</button>
+  </form>
+</section>
+
+<script>
+// Dados iniciais
+let anuncios = JSON.parse(localStorage.getItem("anuncios")) || [];
+const lista = document.getElementById("listaHotéis");
+
+function renderAnuncios() {
+  lista.innerHTML = "";
+
+  anuncios.forEach(hotel => {
+    const card = document.createElement("div");
+    card.className = "hotel-card";
+    card.innerHTML = `
+      <img src="${hotel.imagem}" alt="hotel">
+      <div>
+        <h3>${hotel.nome}</h3>
+        <p>${hotel.local}</p>
+        <p><strong>R$${hotel.preco}</strong> • Nota ${hotel.rate}</p>
+      </div>
+    `;
+    lista.appendChild(card);
+  });
+
+  document.getElementById("quantidade").textContent = `${anuncios.length} propriedades encontradas`;
+}
+
+renderAnuncios();
+
+// Criar anúncio
+const form = document.getElementById("formAnuncio");
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const novoHotel = {
+    nome: document.getElementById("nomeHotel").value,
+    local: document.getElementById("localHotel").value,
+    preco: document.getElementById("precoHotel").value,
+    rate: document.getElementById("rateHotel").value,
+    imagem: document.getElementById("imagemHotel").value
+  };
+
+  anuncios.push(novoHotel);
+  localStorage.setItem("anuncios", JSON.stringify(anuncios));
+
+  renderAnuncios();
+  form.reset();
+  alert("Anúncio publicado!");
+});
+</script>
+
+</body>
+</html>
